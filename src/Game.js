@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import Toggle from './Toggle';
 
 let pengine;
 
@@ -11,6 +12,15 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
+  const [toggled, setToggled] = useState(false);
+  const [rowCluesSat, setRowCluesSat] = useState(false);
+  const [colCluesSat, setColCluesSat] = useState(false);
+  const [row, setRow] = useState(null);
+  const [col, setCol] = useState(null);
+
+  const handleToggle = () => {
+    setToggled(!toggled);
+  }
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -27,6 +37,8 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
+        setRowCluesSat(Array(response['RowClues'].length).fill(false));
+        setColCluesSat(Array(response['ColumClues'].length).fill(false));
       }
     });
   }
@@ -38,37 +50,51 @@ function Game() {
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content = '#'; // Content to put in the clicked square.
+    const content = toggled ? "#" : "X"; // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
+        console.log(response);
+        console.log(queryS);
         setGrid(response['ResGrid']);
+        setRowCluesSat(response['RowSat']);
+        setRow(i);
+        setColCluesSat(response['ColSat']);
+        setCol(j);
       }
       setWaiting(false);
     });
   }
 
   if (!grid) {
-    return null;
-  }
+  return null;
+}
 
-  const statusText = 'Keep playing!';
-  return (
-    <div className="game">
+const statusText = 'Keep playing!';
+return (
+  <div className="game">
+    <div>
       <Board
         grid={grid}
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
+        row={row}
+        col={col}
+        rowCluesSat={rowCluesSat}
+        colCluesSat={colCluesSat}
       />
-      <div className="game-info">
-        {statusText}
-      </div>
+      <Toggle toggled = {toggled} onClick={handleToggle}/> 
+      
     </div>
-  );
+    <div className="game-info">
+        {statusText}
+    </div>
+  </div>
+);
 }
 
 export default Game;

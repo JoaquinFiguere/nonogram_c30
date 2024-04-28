@@ -23,7 +23,8 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
 
-put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
+put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 1, 1):-
+	
 	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
 	replace(Row, RowN, NewRow, Grid, NewGrid),
 
