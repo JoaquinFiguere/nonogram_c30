@@ -36,3 +36,10 @@ put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 1, 1):-
 	Cell == Content
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% checkClueSat(+Content, +Pos, +Clues, +Grid, -Sat). 
+% 
+
+	

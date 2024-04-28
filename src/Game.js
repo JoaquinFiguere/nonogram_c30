@@ -13,10 +13,8 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [toggled, setToggled] = useState(false);
-  const [rowCluesSat, setRowCluesSat] = useState(false);
-  const [colCluesSat, setColCluesSat] = useState(false);
-  const [row, setRow] = useState(null);
-  const [col, setCol] = useState(null);
+  const [rowCluesSat, setRowCluesSat] = useState([]);
+  const [colCluesSat, setColCluesSat] = useState([]);
 
   const handleToggle = () => {
     setToggled(!toggled);
@@ -57,13 +55,9 @@ function Game() {
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
-        console.log(response);
-        console.log(queryS);
         setGrid(response['ResGrid']);
-        setRowCluesSat(response['RowSat']);
-        setRow(i);
-        setColCluesSat(response['ColSat']);
-        setCol(j);
+        rowCluesSat[i] = response['RowSat'];
+        colCluesSat[j] = response['ColSat'];
       }
       setWaiting(false);
     });
@@ -82,8 +76,6 @@ return (
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
-        row={row}
-        col={col}
         rowCluesSat={rowCluesSat}
         colCluesSat={colCluesSat}
       />
