@@ -56,8 +56,12 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        rowCluesSat[i] = response['RowSat'];
-        colCluesSat[j] = response['ColSat'];
+        let auxRowCluesSat = rowCluesSat;
+        auxRowCluesSat[i] = response['RowSat'];
+        let auxColCluesSat = colCluesSat;
+        auxColCluesSat[j] = response['ColSat'];
+        setRowCluesSat(auxRowCluesSat);
+        setColCluesSat(auxColCluesSat);
       }
       setWaiting(false);
     });
