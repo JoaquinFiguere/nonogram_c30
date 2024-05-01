@@ -1,6 +1,9 @@
 :- module(proylcc,
 	[  
-		put/8
+		put/8,
+		checkRowClues/4,
+		checkColClues/4,
+		checkCluesInitial/6
 	]).
 
 :-use_module(library(lists)).
@@ -24,7 +27,6 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 %
 
 put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
-	
 	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
 	replace(Row, RowN, NewRow, Grid, NewGrid),
 
@@ -36,76 +38,72 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	Cell == Content
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)),
-	nth0(RowN, NewGrid, Row), % Row in the index RowN 
-	nth0(RowN, RowsClues, RowClues), % RowClues in the index RowN
-	nth0(ColN, ColsClues, ColClues), % ColClues in the index ColN	
-	length(NewGrid , CantRows),
-	CantRows1 is CantRows - 1,
-	searchColumn(CantRows1 , ColN , NewGrid , Column),
-	checkCluesAndLine(RowClues , Row , RowSat),
-	checkCluesAndLine(ColClues , Column , ColSat).
+	checkRowClues(RowN , RowsClues , RowSat , NewGrid),
+	checkColClues(ColN , ColsClues , ColSat , NewGrid).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+checkCluesInitial([RowN, ColN], RowsClues, ColsClues, Grid, RowSat, ColSat):-
+	checkRowClues(RowN , RowsClues , RowSat , Grid),
+	checkColClues(ColN , ColsClues , ColSat , Grid).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+checkRowClues(RowN , RowsClues , true , Grid):-
+	nth0(RowN , Grid , Row), % Row in the index RowN	
+	nth0(RowN , RowsClues , RowClues), % RowClues in the index RowN
+	checkLineClues(RowClues , Row).
+checkRowClues(_ , _ , false , _).
+
+checkColClues(ColN , ColsClues , true , Grid):-
+	searchColumn(ColN, Grid , Column), % Column in the index ColN
+	nth0(ColN , ColsClues , ColClues), % ColClues in the index ColN
+	checkLineClues(ColClues , Column).
+checkColClues(_ , _ , false , _).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		
+searchColumn(ColN , Grid , Column):-
+	maplist( nth0(ColN) , Grid , Column).
 	
-
+		
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-	searchColumn(-1 , _ , _ , _Column).
-	searchColumn(Indice , ColN, Grid, Column):-
-		nth0(Indice, Grid, Row),
-		nth0(ColN, Row, Element),
-		NewIndice is Indice - 1,
-		searchColumn(NewIndice, ColN, Grid, [Element | Column]).
+checkLineClues([0] , Line):-
+	not(member("#" , Line)).
+		
+checkLineClues([ ] , Line):-
+	not(member("#" , Line)).
+		
+checkLineClues([Clue | RestClues] , [FirstElem | RestLine]):-
+	FirstElem == "#",
+	checkConsecutiveHash(Clue , [FirstElem | RestLine] , RestingLine),
+	checkLineClues(RestClues , RestingLine).
 
-
+checkLineClues(Clues , [FirstElem | RestLine]):-
+	FirstElem \== "#",
+	checkLineClues(Clues , RestLine).
+		
+		
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		
+checkConsecutiveHash(0 , [ ] , [ ]).
+		
+checkConsecutiveHash(0 , [FirstElem | RestLine] , RestLine):-
+	FirstElem \== "#".
+		
+checkConsecutiveHash(CluesResting , [FirstElem | RestLine] , FinalLine):-
+	FirstElem == "#",
+	CluesRestingAux is CluesResting - 1,
+	checkConsecutiveHash(CluesRestingAux , RestLine , FinalLine).
 
-
-% Caso base: no hay más clues y no hay más celdas en la fila.
-checkCluesAndLine([], [], true).
-
-% Caso recursivo: el primer clue es igual a la cantidad de # consecutivos en la fila.
-checkCluesAndLine([Clue|RestOfClues], Line, Sat):-
-    iterateUntilHash(Line, LineAfterHash),
-    countConsecutiveHashes(LineAfterHash, 0, Clue, RestOfLine),
-    checkNoMoreHashes(RestOfLine),
-    checkCluesAndLine(RestOfClues, RestOfLine, Sat).
-
-
+		
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% Caso base
-iterateUntilHash([], []).
-iterateUntilHash(['#'|RestOfLine], ['#'|RestOfLine]).
-
-% Caso recursivo: la celda actual no es un #, por lo que seguimos buscando.
-iterateUntilHash(['_'|RestOfLine], RestOfLineAfterHash):-
-    iterateUntilHash(RestOfLine, RestOfLineAfterHash).
-
-iterateUntilHash(['X'|RestOfLine], RestOfLineAfterHash):-
-	iterateUntilHash(RestOfLine, RestOfLineAfterHash).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% Caso base: hemos contado la cantidad correcta de # consecutivos.
-countConsecutiveHashes(Line, Count, Count, Line).
-
-% Caso recursivo: seguimos contando # consecutivos.
-countConsecutiveHashes(['#'|RestOfLine], Count, Clue, RestOfLineAfterHashes):-
-    NewCount is Count + 1,
-    countConsecutiveHashes(RestOfLine, NewCount, Clue, RestOfLineAfterHashes).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% Caso base: la siguiente celda no es un # o no hay mas celdas.
-checkNoMoreHashes(['_'|_]).
-checkNoMoreHashes(['X'|_]).
-checkNoMoreHashes([]).
-
-% Caso recursivo: la siguiente celda es un #, lo cual es un error.
-checkNoMoreHashes(['#'|_]):-
-    fail.

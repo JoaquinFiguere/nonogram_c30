@@ -1,122 +1,176 @@
 * {
   box-sizing: border-box;
-  }
-  
-  body {
-    font-family: sans-serif;
-    margin: 20px;
-    padding: 0;
-  }
-  
-  .square {
-    background: #fff;
-    border: 1px solid #999;
-    font-size: 24px;
-    font-weight: bold;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-  }
-  
-  .board {
-    display: grid;
-  }
-  
-  .horizontal {
-    display: flex;
-  }
-  
-  .vertical {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .rowClues {
-    display: grid;
-  }
-  
-  .colClues {
-    display: grid;
-  }
-  
-  .clue {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    background: #b9d6e0;
-    border-radius: 8px;
-    margin: 5px;
-    padding: 3px;
-  }
+}
 
-  .clueSat {
-    background: greenyellow;
-  } 
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrar verticalmente */
+  align-items: center; /* Centrar horizontalmente */
+  height: 100vh; /* Hacer que la rejilla ocupe toda la altura de la ventana */
+  background-color: rgb(123, 91, 205); /* Color de fondo */
+}
+
+.square {
+  background: #fff;
+  border: 2px solid #000000;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s; /* Agregamos una transición para suavizar el efecto */
+}
+
+.square:hover {
+  transform: scale(1.2); 
+  border-color: #c51313;
+}
+
+.painted {
+  background: #000000;
+}
+
+.board {
+  display: grid;
+}
+
+.horizontal {
+  display: flex;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.rowClues {
+  display: grid;
+}
+
+.colClues {
+  display: grid;
+}
+
+.clue {
+  display: flex;
+  border: 2px solid #b9d6e0;
+  justify-content: flex-end;
+  align-items: center;
+  background: #b9d6e0;
+  border-radius: 8px;
+  margin: 5px;
+  padding: 3px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.clue:hover {
+  transform: scale(1.2);
+  border-color: rgb(174, 0, 0);
+}
+
+.clueSat {
+  background: greenyellow;
+  border: 2px solid greenyellow;
+}
+
+.clueSat:hover {
+  border-color: green;
+}
+
+.clue div {
+  margin: 2px;
+}
+
+.colClues .clue {
+  flex-direction: column;
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-info {
+  margin-top: 100px;
+  font-size: 24px; 
+  margin-left: 20px;
+  font-family: 'cursive'; /* Cambia 'Arial' por la fuente que prefieras */
+  width: 37%; /* Ajusta el ancho de la caja */
+  margin: auto;
+  text-align: center;
+} 
+
+/* Estilos para el toggle switch button */
+.toggle-switch {
+
+  margin-top: 20px; /* Espacio entre la rejilla y el interruptor */
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
   
-  .clue div {
-    margin: 2px
-  }
   
-  .colClues .clue {
-    flex-direction: column;
-  }
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
   
-  .game {
-    display: flex;
-    flex-direction: row;
-  }
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+  width: 60px;
+  height: 34px;
+  border: 2px solid #ccc;
+  transition: transform 0.3s, border-color 0.3s; /* Agregamos una transición para suavizar el efecto */
+}
+
+.slider:hover{
+  transform: scale(1.2); 
+  border-color: rgb(11, 14, 11);
+}
+
+.slider:before {
+  content: "X";
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   
-  .game-info {
-    margin-left: 20px;
-  }
-  
-  /* Estilos para el toggle switch button */
-  .toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-  }
-  
-  .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-  }
-  
-  input:checked + .slider {
-    background-color: #2196F3;
-  }
-  
-  input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(26px);
-  }
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+  border: 2px solid #2196F3;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+input:checked + .slider:hover{
+  transform: scale(1.2); 
+  border-color: rgb(11, 14, 11);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+  content: "#";
+}
