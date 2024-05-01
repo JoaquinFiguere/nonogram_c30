@@ -84,7 +84,7 @@ checkLineClues([ ] , Line):-
 		
 checkLineClues([Clue | RestClues] , [FirstElem | RestLine]):-
 	FirstElem == "#",
-	checkConsecutiveHash(Clue , [FirstElem | RestLine] , RestingLine),
+	checkConsecutiveHash(Clue , [FirstElem | RestLine] , 0 , RestingLine),
 	checkLineClues(RestClues , RestingLine).
 
 checkLineClues(Clues , [FirstElem | RestLine]):-
@@ -94,16 +94,15 @@ checkLineClues(Clues , [FirstElem | RestLine]):-
 		
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		
+checkConsecutiveHash(Clue , [ ] , Clue , [ ]).		
 		
-checkConsecutiveHash(0 , [ ] , [ ]).
-		
-checkConsecutiveHash(0 , [FirstElem | RestLine] , RestLine):-
+checkConsecutiveHash(Clue , [FirstElem| RestLine] , Clue , RestLine):-
 	FirstElem \== "#".
 		
-checkConsecutiveHash(CluesResting , [FirstElem | RestLine] , FinalLine):-
+checkConsecutiveHash(Clue , [FirstElem | RestLine] , Counter , FinalLine):-
 	FirstElem == "#",
-	CluesRestingAux is CluesResting - 1,
-	checkConsecutiveHash(CluesRestingAux , RestLine , FinalLine).
+	NewCounter is Counter + 1,
+	checkConsecutiveHash(Clue , RestLine , NewCounter , FinalLine).
 
 		
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
