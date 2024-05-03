@@ -57,7 +57,6 @@ function Game() {
     const colsCluesS = JSON.stringify(colsClues);
     setWaiting(true);
     if(grid){
-      console.log("entro");
       for(let i = 0; i < rowsClues.length; i++){
         const queryRowClue = `checkRowClues(${i}, ${rowsCluesS}, RowSat, ${squaresS})`;
         pengine.query(queryRowClue, (success, response) => {
@@ -103,7 +102,6 @@ function Game() {
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
-        console.log("---------------------------------------------------------------------");
         setGrid(response['ResGrid']);
         let auxRowCluesSat = [...rowCluesSat];
         auxRowCluesSat[i] = response['RowSat'];

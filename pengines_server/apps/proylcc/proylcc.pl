@@ -2,8 +2,7 @@
 	[  
 		put/8,
 		checkRowClues/4,
-		checkColClues/4,
-		checkCluesInitial/6
+		checkColClues/4
 	]).
 
 :-use_module(library(lists)).
@@ -41,17 +40,10 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	checkRowClues(RowN , RowsClues , RowSat , NewGrid),
 	checkColClues(ColN , ColsClues , ColSat , NewGrid).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-checkCluesInitial([RowN, ColN], RowsClues, ColsClues, Grid, RowSat, ColSat):-
-	checkRowClues(RowN , RowsClues , RowSat , Grid),
-	checkColClues(ColN , ColsClues , ColSat , Grid).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%
+%checkRowClues(+RowN , +RowsClues , -RowSat , +Grid).
+%
 
 checkRowClues(RowN , RowsClues , true , Grid):-
 	nth0(RowN , Grid , Row), % Row in the index RowN	
@@ -59,22 +51,29 @@ checkRowClues(RowN , RowsClues , true , Grid):-
 	checkLineClues(RowClues , Row).
 checkRowClues(_ , _ , false , _).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%checkColClues(+ColN , +ColsClues , -ColSat , +Grid).
+%
+
 checkColClues(ColN , ColsClues , true , Grid):-
 	searchColumn(ColN, Grid , Column), % Column in the index ColN
 	nth0(ColN , ColsClues , ColClues), % ColClues in the index ColN
 	checkLineClues(ColClues , Column).
 checkColClues(_ , _ , false , _).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		
+%
+%searchColumn(+ColN , +Grid , -Column).
+%
 		
 searchColumn(ColN , Grid , Column):-
 	maplist( nth0(ColN) , Grid , Column).
-	
-		
+			
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%
+%checkLineClues(+Clues , +Line).
+%
 
 checkLineClues([0] , Line):-
 	not(member("#" , Line)).
@@ -90,9 +89,11 @@ checkLineClues([Clue | RestClues] , [FirstElem | RestLine]):-
 checkLineClues(Clues , [FirstElem | RestLine]):-
 	FirstElem \== "#",
 	checkLineClues(Clues , RestLine).
-		
-		
+				
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%checkConsecutiveHash(+Clue , +Line , +Counter , -FinalLine).
+%
 		
 checkConsecutiveHash(Clue , [ ] , Clue , [ ]).		
 		
@@ -104,5 +105,4 @@ checkConsecutiveHash(Clue , [FirstElem | RestLine] , Counter , FinalLine):-
 	NewCounter is Counter + 1,
 	checkConsecutiveHash(Clue , RestLine , NewCounter , FinalLine).
 
-		
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
